@@ -195,18 +195,20 @@ export default function BulkImportModal() {
     (tx) => tx.type === "income"
   );
   const internalTransferTransactions = expenseTransactions.filter(isInternalTransfer);
+  const spendingTransactions = expenseTransactions.filter(
+    (tx) => !isInternalTransfer(tx)
+  );
   const expenseCount = expenseTransactions.length;
   const incomeCount = incomeTransactions.length;
   const internalTransferCount = internalTransferTransactions.length;
   const totalFlow = selectedTransactions.reduce((sum, tx) => sum + tx.amount, 0);
-  const totalSpent = expenseTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+  const totalSpent = spendingTransactions.reduce((sum, tx) => sum + tx.amount, 0);
   const totalReceived = incomeTransactions.reduce((sum, tx) => sum + tx.amount, 0);
   const totalInternalTransfers = internalTransferTransactions.reduce(
     (sum, tx) => sum + tx.amount,
     0
   );
   const netAmount = totalReceived - totalSpent;
-  const netExcludingTransfers = totalReceived - (totalSpent - totalInternalTransfers);
 
   // ─── Render ────────────────────────────────────────────────────────
 
@@ -444,19 +446,7 @@ export default function BulkImportModal() {
                           </span>
                           {internalTransferCount > 0 && (
                             <span title="Detected self or own-account transfers in selected expenses">
-                              {formatCurrency(totalInternalTransfers)} self transfers
-                            </span>
-                          )}
-                          {internalTransferCount > 0 && (
-                            <span
-                              className={
-                                netExcludingTransfers < 0
-                                  ? "text-[hsl(0_72%_51%)]"
-                                  : "text-[hsl(142_71%_45%)]"
-                              }
-                            >
-                              {formatCurrency(Math.abs(netExcludingTransfers))} adjusted{" "}
-                              {netExcludingTransfers < 0 ? "outflow" : "inflow"}
+                              {formatCurrency(totalInternalTransfers)} self transfers excluded
                             </span>
                           )}
                         </div>

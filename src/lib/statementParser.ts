@@ -961,6 +961,7 @@ async function parsePDFWithRegex(file: File): Promise<ParseResult> {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    const prevLine = i > 0 ? lines[i - 1] : "";
     const nextLine = i + 1 < lines.length ? lines[i + 1] : "";
 
     const dateInLine = parseDate(line);
@@ -982,8 +983,15 @@ async function parsePDFWithRegex(file: File): Promise<ParseResult> {
       /^total$/i, /total amount due/i, /page\s+\d/i, /statement of account/i,
       /account\s*no\./i, /branch code/i, /ifsc code/i, /customer\s*id/i,
       /upi transaction id/i, /^paid by/i, /^debited from/i, /^credited to/i,
+      /transaction statement period/i, /^sent$/i, /^received$/i,
     ];
     if (skipPatterns.some((p) => p.test(line.trim()))) continue;
+
+    const isStandaloneAmount = /^\s*(?:₹|rs\.?\s*)?[\d,]+(?:\.\d{1,2})?\s*$/i.test(line.trim());
+    const isStatementSummaryContext =
+      /transaction statement period|^sent$|^received$/i.test(prevLine.trim()) ||
+      /transaction statement period|^sent$|^received$/i.test(nextLine.trim());
+    if (isStandaloneAmount && isStatementSummaryContext) continue;
 
     const txDate = dateInLine || currentDate;
     if (!txDate) continue;
