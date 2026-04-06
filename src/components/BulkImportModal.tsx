@@ -14,6 +14,8 @@ import {
   FileUp,
   Check,
   Sparkles,
+  Bot,
+  Cpu,
 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { useBulkAddTransactions } from "@/hooks/useBulkImport";
@@ -27,6 +29,20 @@ import { formatCurrency } from "@/lib/data";
 import { toast } from "sonner";
 
 type Step = "upload" | "review" | "importing" | "done";
+
+function isInternalTransfer(tx: ParsedTransaction): boolean {
+  const description = tx.description.toLowerCase();
+  return (
+    description.includes("self transfer") ||
+    description.includes("transfer to state bank of india") ||
+    description.includes("transfer to sbi") ||
+    description.includes("state bank of india 4044") ||
+    description.includes("sbi 4044") ||
+    (description.includes("state bank of india") && /\b4044\b/.test(description)) ||
+    description.includes("own account") ||
+    description.includes("to self")
+  );
+}
 
 export default function BulkImportModal() {
   const { showBulkImportModal, setShowBulkImportModal } = useAppStore();
@@ -170,16 +186,27 @@ export default function BulkImportModal() {
 
   // ─── Computed values ───────────────────────────────────────────────
 
-  const selectedCount = transactions.filter((tx) => tx.selected).length;
-  const totalAmount = transactions
-    .filter((tx) => tx.selected)
-    .reduce((sum, tx) => sum + tx.amount, 0);
-  const expenseCount = transactions.filter(
-    (tx) => tx.selected && tx.type === "expense"
-  ).length;
-  const incomeCount = transactions.filter(
-    (tx) => tx.selected && tx.type === "income"
-  ).length;
+  const selectedTransactions = transactions.filter((tx) => tx.selected);
+  const selectedCount = selectedTransactions.length;
+  const expenseTransactions = selectedTransactions.filter(
+    (tx) => tx.type === "expense"
+  );
+  const incomeTransactions = selectedTransactions.filter(
+    (tx) => tx.type === "income"
+  );
+  const internalTransferTransactions = expenseTransactions.filter(isInternalTransfer);
+  const expenseCount = expenseTransactions.length;
+  const incomeCount = incomeTransactions.length;
+  const internalTransferCount = internalTransferTransactions.length;
+  const totalFlow = selectedTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+  const totalSpent = expenseTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+  const totalReceived = incomeTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+  const totalInternalTransfers = internalTransferTransactions.reduce(
+    (sum, tx) => sum + tx.amount,
+    0
+  );
+  const netAmount = totalReceived - totalSpent;
+  const netExcludingTransfers = totalReceived - (totalSpent - totalInternalTransfers);
 
   // ─── Render ────────────────────────────────────────────────────────
 
@@ -230,8 +257,22 @@ export default function BulkImportModal() {
                     <p className="text-xs text-muted-foreground mt-0.5">
                       {step === "upload" &&
                         "Upload a bank statement or UPI export"}
-                      {step === "review" &&
-                        `${parseResult?.fileName} · ${transactions.length} transactions found`}
+                      {step === "review" && (
+                        <span className="flex items-center gap-2">
+                          {parseResult?.fileName} · {transactions.length} transactions found
+                          {parseResult?.parsedVia === "ai" ? (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[hsl(142_71%_45%/0.1)] text-[hsl(142_71%_45%)] text-[9px] font-semibold uppercase tracking-wider">
+                              <Bot className="w-2.5 h-2.5" />
+                              AI-Powered
+                            </span>
+                          ) : parseResult?.parsedVia === "regex" ? (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[hsl(38_92%_50%/0.1)] text-[hsl(38_92%_50%)] text-[9px] font-semibold uppercase tracking-wider">
+                              <Cpu className="w-2.5 h-2.5" />
+                              Text-Based
+                            </span>
+                          ) : null}
+                        </span>
+                      )}
                       {step === "importing" && "Please wait while we add your transactions"}
                       {step === "done" &&
                         `${importedCount} transactions imported successfully`}
@@ -372,12 +413,28 @@ export default function BulkImportModal() {
                     >
                       {/* Summary bar */}
                       <div className="px-5 py-3 bg-secondary/20 border-b border-border flex items-center justify-between flex-wrap gap-2">
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
                           <span className="font-medium text-foreground">
                             {selectedCount} selected
                           </span>
                           <span>
-                            {formatCurrency(totalAmount)} total
+                            {formatCurrency(totalSpent)} spent
+                          </span>
+                          <span className="text-[hsl(142_71%_45%)]">
+                            {formatCurrency(totalReceived)} received
+                          </span>
+                          <span
+                            className={
+                              netAmount < 0
+                                ? "text-[hsl(0_72%_51%)]"
+                                : "text-[hsl(142_71%_45%)]"
+                            }
+                          >
+                            {formatCurrency(Math.abs(netAmount))}{" "}
+                            {netAmount < 0 ? "net outflow" : "net inflow"}
+                          </span>
+                          <span>
+                            {formatCurrency(totalFlow)} flow
                           </span>
                           <span className="text-[hsl(0_72%_51%)]">
                             {expenseCount} expenses
@@ -385,6 +442,23 @@ export default function BulkImportModal() {
                           <span className="text-[hsl(142_71%_45%)]">
                             {incomeCount} income
                           </span>
+                          {internalTransferCount > 0 && (
+                            <span title="Detected self or own-account transfers in selected expenses">
+                              {formatCurrency(totalInternalTransfers)} self transfers
+                            </span>
+                          )}
+                          {internalTransferCount > 0 && (
+                            <span
+                              className={
+                                netExcludingTransfers < 0
+                                  ? "text-[hsl(0_72%_51%)]"
+                                  : "text-[hsl(142_71%_45%)]"
+                              }
+                            >
+                              {formatCurrency(Math.abs(netExcludingTransfers))} adjusted{" "}
+                              {netExcludingTransfers < 0 ? "outflow" : "inflow"}
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-center gap-2">
                           <button
@@ -613,8 +687,17 @@ export default function BulkImportModal() {
               {step === "review" && (
                 <div className="p-5 border-t border-border shrink-0 flex items-center justify-between gap-3">
                   <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-primary" />
-                    Categories auto-detected · click to change
+                    {parseResult?.parsedVia === "ai" ? (
+                      <>
+                        <Bot className="w-3 h-3 text-[hsl(142_71%_45%)]" />
+                        AI-extracted with categories · click to change
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3 h-3 text-primary" />
+                        Categories auto-detected · click to change
+                      </>
+                    )}
                   </p>
                   <button
                     onClick={handleImport}
