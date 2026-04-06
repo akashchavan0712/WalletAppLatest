@@ -77,6 +77,71 @@ export function useDeleteTransaction() {
   });
 }
 
+export function useUpdateTransaction() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: {
+      id: string;
+      amount?: number;
+      type?: string;
+      category?: string;
+      description?: string;
+      date?: string;
+      merchant?: string;
+    }) => {
+      const { error } = await supabase
+        .from("transactions")
+        .update(updates)
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["transactions"] }),
+  });
+}
+
+export function useDeleteTransactions() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase
+        .from("transactions")
+        .delete()
+        .in("id", ids);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["transactions"] }),
+  });
+}
+
+export function useResetAccount() {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error("Not authenticated");
+
+      // Delete user data from all tables
+      const { error: err1 } = await supabase.from("transactions").delete().eq("user_id", user.id);
+      if (err1) throw err1;
+
+      const { error: err2 } = await supabase.from("recurring_transactions").delete().eq("user_id", user.id);
+      if (err2) throw err2;
+
+      const { error: err3 } = await supabase.from("savings_goals").delete().eq("user_id", user.id);
+      if (err3) throw err3;
+
+      const { error: err4 } = await supabase.from("categories").update({ budget: null }).eq("user_id", user.id);
+      if (err4) throw err4;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries();
+    },
+  });
+}
+
 export function useCategories() {
   const { user } = useAuth();
 

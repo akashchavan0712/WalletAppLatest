@@ -1,4 +1,4 @@
-import { Wallet, TrendingUp, TrendingDown, Plus, LogOut, Sparkles, ArrowUpRight, ArrowDownLeft, Zap, PiggyBank, Receipt, CalendarDays } from "lucide-react";
+import { Wallet, TrendingUp, TrendingDown, Plus, LogOut, Sparkles, ArrowUpRight, ArrowDownLeft, Zap, PiggyBank, Receipt, CalendarDays, FileUp } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import MobileNav from "@/components/MobileNav";
 import StatCard from "@/components/StatCard";
@@ -9,7 +9,11 @@ import SavingsGoals from "@/components/SavingsGoals";
 
 import WeeklyChart from "@/components/WeeklyChart";
 import AddExpenseModal from "@/components/AddExpenseModal";
+import EditTransactionModal from "@/components/EditTransactionModal";
+import BulkImportModal from "@/components/BulkImportModal";
 import SettingsPage from "@/pages/Settings";
+import CalendarView from "@/components/CalendarView";
+import UpcomingBills from "@/components/UpcomingBills";
 import { useAppStore } from "@/lib/store";
 import { formatCurrency } from "@/lib/data";
 import { useTransactions, useMonthlyTransactions } from "@/hooks/useTransactions";
@@ -41,12 +45,12 @@ function getCurrentMonth(): string {
   return new Date().toLocaleDateString("en-US", { month: "long" });
 }
 
-function QuickActions({ onAddExpense }: { onAddExpense: () => void }) {
+function QuickActions({ onAddExpense, onImportStatement }: { onAddExpense: () => void; onImportStatement: () => void }) {
   const { setActiveTab } = useAppStore();
   const actions = [
     { label: "Add Expense", icon: ArrowUpRight, onClick: onAddExpense, color: "text-[hsl(0_72%_51%)]", bg: "bg-[hsl(0_72%_51%/0.1)]" },
     { label: "Add Income", icon: ArrowDownLeft, onClick: onAddExpense, color: "text-[hsl(142_71%_45%)]", bg: "bg-[hsl(142_71%_45%/0.1)]" },
-    { label: "Budgets", icon: PiggyBank, onClick: () => setActiveTab("budgets"), color: "text-[hsl(258_90%_66%)]", bg: "bg-[hsl(258_90%_66%/0.1)]" },
+    { label: "Import", icon: FileUp, onClick: onImportStatement, color: "text-[hsl(258_90%_66%)]", bg: "bg-[hsl(258_90%_66%/0.1)]" },
     { label: "Analytics", icon: Zap, onClick: () => setActiveTab("analytics"), color: "text-[hsl(38_92%_50%)]", bg: "bg-[hsl(38_92%_50%/0.1)]" },
   ];
 
@@ -169,7 +173,7 @@ function TopSpending({ transactions }: { transactions: Array<{ type: string; cat
 }
 
 function DashboardView() {
-  const { setShowAddModal } = useAppStore();
+  const { setShowAddModal, setShowBulkImportModal } = useAppStore();
   const { data: monthlyTransactions = [] } = useMonthlyTransactions();
   const { data: transactions = [] } = useTransactions();
   const { signOut, user } = useAuth();
@@ -202,6 +206,15 @@ function DashboardView() {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            onClick={() => setShowBulkImportModal(true)}
+            className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-lg bg-secondary/60 border border-border text-foreground text-sm font-medium hover:bg-secondary transition-all duration-200"
+          >
+            <FileUp className="w-4 h-4" />
+            Import
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setShowAddModal(true)}
             className="hidden lg:flex items-center gap-2 px-5 py-2.5 rounded-lg gradient-primary text-white text-sm font-medium shadow-lg shadow-[hsl(217_91%_60%/0.2)] hover:shadow-[hsl(217_91%_60%/0.3)] transition-shadow duration-200"
           >
@@ -223,7 +236,7 @@ function DashboardView() {
         <div className="lg:col-span-2">
           <SpendingChart />
         </div>
-        <QuickActions onAddExpense={() => setShowAddModal(true)} />
+        <QuickActions onAddExpense={() => setShowAddModal(true)} onImportStatement={() => setShowBulkImportModal(true)} />
       </motion.div>
 
       {/* Weekly + Monthly Summary */}
@@ -240,6 +253,7 @@ function DashboardView() {
           <TransactionList limit={6} />
         </div>
         <div className="space-y-5">
+          <UpcomingBills />
           <BudgetRings />
           <TopSpending transactions={monthlyTransactions} />
         </div>
@@ -291,6 +305,7 @@ export default function Index() {
     transactions: <TransactionsView />,
     analytics: <AnalyticsView />,
     budgets: <BudgetsView />,
+    calendar: <CalendarView />,
     settings: <SettingsPage />,
   };
 
@@ -308,6 +323,8 @@ export default function Index() {
       </main>
       <MobileNav />
       <AddExpenseModal />
+      <EditTransactionModal />
+      <BulkImportModal />
     </div>
   );
 }

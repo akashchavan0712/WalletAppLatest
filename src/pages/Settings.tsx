@@ -10,6 +10,7 @@ import {
   Moon,
   Save,
   X,
+  Download,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -19,6 +20,8 @@ import {
   useRecurringTransactions,
   useAddRecurringTransaction,
   useDeleteRecurringTransaction,
+  useResetAccount,
+  useTransactions,
 } from "@/hooks/useTransactions";
 import { useAppStore } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
@@ -416,6 +419,153 @@ function RecurringSection() {
   );
 }
 
+function ResetAccountSection() {
+  const resetAccount = useResetAccount();
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleReset = () => {
+    resetAccount.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Account data cleared successfully!");
+        setShowConfirm(false);
+      },
+      onError: (e) => toast.error(e.message),
+    });
+  };
+
+  return (
+    <div className="glass-card p-6 border-destructive/20">
+      <div className="flex items-center gap-3 mb-4">
+        <Trash2 className="w-5 h-5 text-destructive" />
+        <h3 className="font-display font-semibold text-foreground">
+          Danger Zone
+        </h3>
+      </div>
+      <div>
+        <p className="text-sm font-medium text-foreground mb-1">Reset Account</p>
+        <p className="text-xs text-muted-foreground mb-4">
+          Permanently delete all your transactions, recurring transactions, savings goals, and budgets. This cannot be undone.
+        </p>
+        
+        {showConfirm ? (
+          <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
+            <p className="text-sm font-semibold text-destructive mb-3">Are you absolutely sure?</p>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleReset}
+                disabled={resetAccount.isPending}
+                className="px-4 py-2 bg-destructive text-white text-sm font-medium rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-50"
+              >
+                {resetAccount.isPending ? "Resetting..." : "Yes, Delete Everything"}
+              </button>
+              <button
+                onClick={() => setShowConfirm(false)}
+                disabled={resetAccount.isPending}
+                className="px-4 py-2 bg-secondary text-foreground text-sm font-medium rounded-lg hover:bg-secondary/80 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowConfirm(true)}
+            className="px-4 py-2 bg-destructive/10 text-destructive border border-destructive/20 text-sm font-medium rounded-lg hover:bg-destructive/20 transition-colors"
+          >
+            Reset Account Data
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CurrencySection() {
+  const { currency, setCurrency } = useAppStore();
+
+  return (
+    <div className="glass-card p-6">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-5 h-5 flex items-center justify-center text-primary font-bold">₹</div>
+        <h3 className="font-display font-semibold text-foreground">
+          Currency
+        </h3>
+      </div>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-foreground font-medium">Default Currency</p>
+          <p className="text-xs text-muted-foreground">
+            Changes your display currency globally
+          </p>
+        </div>
+        <select
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value)}
+          className="bg-secondary/60 border border-border rounded-lg px-3 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
+        >
+          <option value="INR">INR (₹)</option>
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GBP">GBP (£)</option>
+        </select>
+      </div>
+    </div>
+  );
+}
+
+function DataExportSection() {
+  const { data: transactions = [] } = useTransactions();
+
+  const handleExportCSV = () => {
+    if (transactions.length === 0) {
+      toast.error("No transactions to export");
+      return;
+    }
+
+    const headers = ["Date", "Description", "Amount", "Type", "Category"];
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      headers.join(",") +
+      "\n" +
+      transactions
+        .map((tx) => `${tx.date},"${tx.description}",${tx.amount},${tx.type},${tx.category}`)
+        .join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `finflow_export_${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Export successful!");
+  };
+
+  return (
+    <div className="glass-card p-6">
+      <div className="flex items-center gap-3 mb-4">
+        <Download className="w-5 h-5 text-primary" />
+        <h3 className="font-display font-semibold text-foreground">
+          Data Export
+        </h3>
+      </div>
+      <div>
+        <p className="text-sm font-medium text-foreground mb-1">Export to CSV</p>
+        <p className="text-xs text-muted-foreground mb-4">
+          Download your complete transaction history to your device.
+        </p>
+        <button
+          onClick={handleExportCSV}
+          className="px-4 py-2 bg-secondary text-foreground text-sm font-medium rounded-lg hover:bg-secondary/80 transition-colors flex items-center gap-2"
+        >
+          <Download className="w-4 h-4" />
+          Download CSV
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function SettingsPage() {
   return (
     <motion.div
@@ -438,10 +588,16 @@ export default function SettingsPage() {
       <motion.div variants={item} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <PasswordSection />
         <ThemeSection />
+        <CurrencySection />
+        <DataExportSection />
       </motion.div>
 
       <motion.div variants={item}>
         <RecurringSection />
+      </motion.div>
+      
+      <motion.div variants={item}>
+        <ResetAccountSection />
       </motion.div>
     </motion.div>
   );

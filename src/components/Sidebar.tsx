@@ -1,4 +1,4 @@
-import { LayoutDashboard, Receipt, PieChart, CreditCard, Settings } from "lucide-react";
+import { LayoutDashboard, Receipt, PieChart, CreditCard, Settings, CalendarDays } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { useProfile } from "@/hooks/useTransactions";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "transactions", label: "Transactions", icon: Receipt },
+  { id: "calendar", label: "Calendar", icon: CalendarDays },
   { id: "analytics", label: "Analytics", icon: PieChart },
   { id: "budgets", label: "Budgets", icon: CreditCard },
   { id: "settings", label: "Settings", icon: Settings },

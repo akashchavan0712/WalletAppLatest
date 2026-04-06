@@ -10,8 +10,14 @@ interface AppState {
   setActiveTab: (tab: string) => void;
   showAddModal: boolean;
   setShowAddModal: (show: boolean) => void;
+  showBulkImportModal: boolean;
+  setShowBulkImportModal: (show: boolean) => void;
+  editTransactionId: string | null;
+  setEditTransactionId: (id: string | null) => void;
   theme: "dark" | "light";
   toggleTheme: () => void;
+  currency: string;
+  setCurrency: (currency: string) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -19,6 +25,10 @@ export const useAppStore = create<AppState>((set) => ({
   setActiveTab: (tab) => set({ activeTab: tab }),
   showAddModal: false,
   setShowAddModal: (show) => set({ showAddModal: show }),
+  showBulkImportModal: false,
+  setShowBulkImportModal: (show) => set({ showBulkImportModal: show }),
+  editTransactionId: null,
+  setEditTransactionId: (id) => set({ editTransactionId: id }),
   theme: getStoredTheme(),
   toggleTheme: () =>
     set((state) => {
@@ -27,6 +37,11 @@ export const useAppStore = create<AppState>((set) => ({
       document.documentElement.classList.toggle("light", next === "light");
       return { theme: next };
     }),
+  currency: (typeof window !== "undefined" && localStorage.getItem("finflow-currency")) || "INR",
+  setCurrency: (currency) => set(() => {
+    localStorage.setItem("finflow-currency", currency);
+    return { currency };
+  }),
 }));
 
 // Initialize theme on load
