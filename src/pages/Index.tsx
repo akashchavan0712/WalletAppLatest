@@ -183,7 +183,7 @@ function DashboardView() {
     <motion.div variants={container} initial="hidden" animate="show" className="h-full flex flex-col gap-4">
       {/* Hero: Current Liquidity */}
       <motion.div variants={item} className="shrink-0">
-        <p className="text-[10px] font-label uppercase tracking-[0.2em] text-muted-foreground mb-3">Current Liquidity</p>
+        <p className="text-[10px] font-label uppercase tracking-[0.2em] text-muted-foreground mb-3">Available Capital</p>
         <div className="flex items-baseline gap-6 flex-wrap">
             <h1 className="text-5xl lg:text-7xl font-headline font-black text-foreground tracking-tighter flex items-baseline">
                 {formatCurrency(balance).split('.')[0]}
@@ -200,7 +200,7 @@ function DashboardView() {
       <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-6 shrink-0">
         <StatCard 
           variant="editorial"
-          title="Monthly Income" 
+          title="Capital Inflow" 
           value={formatCurrency(totalIncome)} 
           change="Scheduled: 2 pending" 
           changeType="positive" 
@@ -208,7 +208,7 @@ function DashboardView() {
         />
         <StatCard 
           variant="editorial"
-          title="Total Expenses" 
+          title="Capital Outflow" 
           value={formatCurrency(totalExpense)} 
           change={`${monthlyTransactions.filter(t => t.type === 'expense').length} transactions`}
           changeType="negative" 

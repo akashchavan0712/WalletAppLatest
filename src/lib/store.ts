@@ -34,6 +34,7 @@ export const useAppStore = create<AppState>((set) => ({
     set((state) => {
       const next = state.theme === "dark" ? "light" : "dark";
       localStorage.setItem("finflow-theme", next);
+      document.documentElement.classList.toggle("dark", next === "dark");
       document.documentElement.classList.toggle("light", next === "light");
       return { theme: next };
     }),
@@ -46,8 +47,8 @@ export const useAppStore = create<AppState>((set) => ({
 
 // Initialize theme on load
 if (typeof window !== "undefined") {
-  const savedTheme = localStorage.getItem("finflow-theme");
-  if (savedTheme === "light") {
-    document.documentElement.classList.add("light");
-  }
+  const savedTheme = localStorage.getItem("finflow-theme") || "dark";
+  document.documentElement.classList.add(savedTheme);
+  // Ensure the other class is removed
+  document.documentElement.classList.remove(savedTheme === "dark" ? "light" : "dark");
 }

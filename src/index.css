@@ -141,7 +141,16 @@
   }
 
   .editorial-gradient {
-    background: linear-gradient(135deg, hsl(217 91% 60%), hsl(258 90% 66%));
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+  }
+
+  .bg-dot-pattern {
+    background-image: radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .bg-matte-dark {
+    background-color: #0b1120;
   }
 
   .gradient-income {

@@ -27,8 +27,8 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="mb-8 px-4 py-2 flex items-center justify-between">
         <div>
-          <h1 className="font-headline font-extrabold text-lg tracking-tighter text-foreground">Wallet Tracker</h1>
-          <p className="text-xs text-muted-foreground font-label">Editorial Intelligence</p>
+          <h1 className="font-headline font-extrabold text-lg tracking-tighter text-foreground">Capital Command</h1>
+          <p className="text-[10px] text-muted-foreground font-label uppercase tracking-widest">Editorial Insight</p>
         </div>
         <ThemeToggle />
       </div>
