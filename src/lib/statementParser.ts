@@ -984,13 +984,22 @@ async function parsePDFWithRegex(file: File): Promise<ParseResult> {
       /account\s*no\./i, /branch code/i, /ifsc code/i, /customer\s*id/i,
       /upi transaction id/i, /^paid by/i, /^debited from/i, /^credited to/i,
       /transaction statement period/i, /^sent$/i, /^received$/i,
+      // Date range pattern: DD Mon YYYY - DD Mon YYYY
+      /\d{1,2}[\s/\-][a-zA-Z]{3,}[\s/\-]\d{2,4}\s*(?:-|to)\s*\d{1,2}[\s/\-][a-zA-Z]{3,}[\s/\-]\d{2,4}/i,
+      // Date range pattern: DD/MM/YYYY - DD/MM/YYYY
+      /\d{1,2}[/\-.]\d{1,2}[/\-.]\d{2,4}\s*(?:-|to)\s*\d{1,2}[/\-.]\d{1,2}[/\-.]\d{2,4}/i
     ];
     if (skipPatterns.some((p) => p.test(line.trim()))) continue;
 
     const isStandaloneAmount = /^\s*(?:₹|rs\.?\s*)?[\d,]+(?:\.\d{1,2})?\s*$/i.test(line.trim());
-    const isStatementSummaryContext =
-      /transaction statement period|^sent$|^received$/i.test(prevLine.trim()) ||
-      /transaction statement period|^sent$|^received$/i.test(nextLine.trim());
+    
+    const isSummaryLine = (text: string) => 
+      /transaction statement period|^sent$|^received$/i.test(text.trim()) ||
+      /\d{1,2}[\s/\-][a-zA-Z]{3,}[\s/\-]\d{2,4}\s*(?:-|to)\s*\d{1,2}[\s/\-][a-zA-Z]{3,}[\s/\-]\d{2,4}/i.test(text.trim()) ||
+      /\d{1,2}[/\-.]\d{1,2}[/\-.]\d{2,4}\s*(?:-|to)\s*\d{1,2}[/\-.]\d{1,2}[/\-.]\d{2,4}/i.test(text.trim());
+
+    const isStatementSummaryContext = isSummaryLine(prevLine) || isSummaryLine(nextLine);
+    
     if (isStandaloneAmount && isStatementSummaryContext) continue;
 
     const txDate = dateInLine || currentDate;
@@ -1002,8 +1011,8 @@ async function parsePDFWithRegex(file: File): Promise<ParseResult> {
     }
     description = description
       .replace(/[\d,]+\.\d{2}\s*(cr|dr)?$/gi, "")
-      .replace(/₹\s*[\d,]+/g, "")
-      .replace(/rs\.?\s*[\d,]+/gi, "")
+      .replace(/₹\s*[\d,]+(?:\.\d{1,2})?/g, "")
+      .replace(/rs\.?\s*[\d,]+(?:\.\d{1,2})?/gi, "")
       .trim();
 
     description = description
