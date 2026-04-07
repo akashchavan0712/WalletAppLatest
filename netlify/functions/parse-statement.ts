@@ -78,7 +78,7 @@ export default async (req: Request) => {
       return new Response(JSON.stringify({ error: "Missing GEMINI_API_KEY setup in Netlify" }), { status: 500 });
     }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${encodeURIComponent(apiKey)}`;
     
     const res = await fetch(url, {
       method: "POST",
@@ -124,7 +124,7 @@ export default async (req: Request) => {
 
     const parsed = parseAIJsonResponse(text);
 
-    const txArray = parsed?.transactions || [];
+    const txArray: any[] = Array.isArray(parsed?.transactions) ? parsed.transactions : [];
     const transactions = txArray
       .filter((t: any) => t && typeof t === "object" && (t.type === "income" || t.type === "expense") && t.date && t.amount > 0)
       .map((t: any) => ({

@@ -3,6 +3,7 @@ import { useAppStore } from "@/lib/store";
 import { useProfile } from "@/hooks/useTransactions";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
+import ThemeToggle from "./ThemeToggle";
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -15,17 +16,21 @@ const navItems = [
 
 export default function Sidebar() {
   const { activeTab, setActiveTab } = useAppStore();
-  const { data: profile } = useProfile();
-  const { user } = useAuth();
+  const profile = useProfile();
+  const auth = useAuth();
+  
+  const userProfile = profile.data;
+  const user = auth.user;
 
   return (
-    <aside className="hidden lg:flex flex-col w-[260px] bg-card border-r border-border p-5 h-screen sticky top-0">
+    <aside className="hidden lg:flex flex-col h-full p-4 gap-2 bg-muted/30 w-64 fixed left-0 top-0 border-r-0 font-headline text-sm font-medium tracking-tight">
       {/* Logo */}
-      <div className="flex items-center gap-3 mb-10 px-2">
-        <div className="w-9 h-9 rounded-lg gradient-primary flex items-center justify-center font-display font-bold text-white text-sm shadow-lg shadow-[hsl(217_91%_60%/0.25)]">
-          F
+      <div className="mb-8 px-4 py-2 flex items-center justify-between">
+        <div>
+          <h1 className="font-headline font-extrabold text-lg tracking-tighter text-foreground">Wallet Tracker</h1>
+          <p className="text-xs text-muted-foreground font-label">Editorial Intelligence</p>
         </div>
-        <h1 className="font-display font-bold text-lg text-foreground tracking-tight">Finflow</h1>
+        <ThemeToggle />
       </div>
 
       {/* Navigation */}
@@ -36,20 +41,13 @@ export default function Sidebar() {
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 ${
+              className={`relative w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all active:scale-[0.98] ${
                 isActive
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                  ? "text-primary bg-card shadow-sm font-bold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-card/50"
               }`}
             >
-              {isActive && (
-                <motion.div
-                  layoutId="sidebar-active"
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-                />
-              )}
-              <item.icon className={`w-[18px] h-[18px] ${isActive ? "text-primary" : ""}`} />
+              <item.icon className="w-5 h-5 text-current" />
               <span>{item.label}</span>
             </button>
           );
@@ -57,29 +55,28 @@ export default function Sidebar() {
       </nav>
 
       {/* Profile */}
-      <button
-        onClick={() => setActiveTab("settings")}
-        className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/60 transition-colors mb-3"
-      >
-        <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-white font-display font-semibold text-xs">
-          {(profile?.display_name || user?.email || "U").charAt(0).toUpperCase()}
+      <div className="mt-auto p-4 bg-muted/50 rounded-2xl flex items-center gap-3 mb-2">
+        <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center font-headline font-bold text-primary shadow-sm">
+          {(userProfile?.display_name || user?.email || "U").charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0 text-left">
-          <p className="text-sm font-medium text-foreground truncate">
-            {profile?.display_name || "User"}
+          <p className="text-xs font-bold text-foreground truncate">
+            {userProfile?.display_name || "User"}
           </p>
-          <p className="text-[10px] text-muted-foreground truncate">
+          <p className="text-[10px] text-muted-foreground truncate font-label pr-1">
             {user?.email}
           </p>
         </div>
-      </button>
-
-      {/* Quick tip */}
-      <div className="bg-secondary/40 rounded-lg p-4 border border-border">
-        <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider mb-2">💡 Tip</p>
-        <p className="text-[11px] text-muted-foreground leading-relaxed">
-          Set budgets for each category to track spending and stay on target.
-        </p>
+      </div>
+      
+      {/* Quick Add Top up replacement styling */}
+      <div className="px-2">
+        <button
+          onClick={() => setActiveTab("add")}
+          className="w-full py-2.5 bg-foreground text-background rounded-xl font-bold text-sm active:scale-95 transition-transform hover:opacity-90"
+        >
+          Quick Add
+        </button>
       </div>
     </aside>
   );

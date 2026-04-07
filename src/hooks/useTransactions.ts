@@ -321,3 +321,26 @@ export function useUpdateProfile() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["profile"] }),
   });
 }
+
+export function useUpdateCategory() {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: {
+      id: string;
+      name?: string;
+      icon?: string;
+      color?: string;
+      budget?: number | null;
+    }) => {
+      if (!user) throw new Error("Not authenticated");
+      const { error } = await supabase
+        .from("categories")
+        .update(updates)
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["categories"] }),
+  });
+}

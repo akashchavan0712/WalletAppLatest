@@ -1,3 +1,4 @@
+// @ts-nocheck
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -138,7 +139,7 @@ async function callGemini(base64Pdf: string): Promise<Transaction[]> {
   const key = Deno.env.get("GEMINI_API_KEY");
   if (!key) throw new Error("Missing GEMINI_API_KEY secret");
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${encodeURIComponent(key)}`;
 
   const res = await fetch(url, {
     method: "POST",

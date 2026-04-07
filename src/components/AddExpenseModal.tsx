@@ -80,15 +80,15 @@ export default function AddExpenseModal() {
             transition={{ type: "spring", bounce: 0.2 }}
             className="fixed z-50 inset-0 flex items-center justify-center p-4"
           >
-            <div className="w-full max-w-[480px] glass-card p-6 max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="font-display font-bold text-xl text-foreground">Add Transaction</h2>
+            <div className="w-full max-w-[480px] bg-background border border-muted/50 rounded-[2.5rem] shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="font-headline font-extrabold text-2xl tracking-tight text-foreground">Add Transaction</h2>
                 <button onClick={() => setShowAddModal(false)} className="text-muted-foreground hover:text-foreground p-1">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="flex gap-1 p-1 bg-secondary/60 rounded-lg mb-5">
+              <div className="flex gap-1 p-1 bg-muted/50 rounded-xl mb-6 border border-muted/30">
                 {(["expense", "income"] as const).map((t) => (
                   <button
                     key={t}
@@ -98,12 +98,12 @@ export default function AddExpenseModal() {
                       setCustomIncomeCategory("");
                       if (t === "income") setDescription("");
                     }}
-                    className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all capitalize ${
+                    className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all capitalize ${
                       type === t
                         ? t === "expense"
-                          ? "bg-card shadow-sm text-foreground"
-                          : "bg-card shadow-sm text-foreground"
-                        : "text-muted-foreground"
+                          ? "bg-background shadow-sm text-foreground"
+                          : "bg-background shadow-sm text-foreground"
+                        : "text-muted-foreground hover:text-foreground/80"
                     }`}
                   >
                     {t}
@@ -111,66 +111,66 @@ export default function AddExpenseModal() {
                 ))}
               </div>
 
-              <div className="mb-4">
-                <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Amount (₹)</label>
+              <div className="mb-5">
+                <label className="text-[10px] text-muted-foreground font-label uppercase tracking-widest px-1 block mb-1">Amount (₹)</label>
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full mt-2 bg-secondary/60 border border-border rounded-lg px-4 py-3 text-2xl font-display font-bold text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40"
+                  className="w-full bg-muted/40 border border-muted/50 rounded-2xl px-5 py-4 text-3xl font-headline font-extrabold text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-background transition-all"
                 />
               </div>
 
               {type === "expense" && (
-                <div className="mb-4">
-                  <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Description</label>
+                <div className="mb-5">
+                  <label className="text-[10px] text-muted-foreground font-label uppercase tracking-widest px-1 block mb-1">Description</label>
                   <input
                     type="text"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="What was this for?"
-                    className="w-full mt-2 bg-secondary/60 border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40"
+                    className="w-full bg-muted/40 border border-muted/50 rounded-xl px-4 py-3.5 text-base font-medium text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-background transition-all"
                   />
                 </div>
               )}
 
               {type === "income" && category === "custom" && (
-                <div className="mb-4">
-                  <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Custom income category</label>
+                <div className="mb-5">
+                  <label className="text-[10px] text-muted-foreground font-label uppercase tracking-widest px-1 block mb-1">Custom income category</label>
                   <input
                     type="text"
                     value={customIncomeCategory}
                     onChange={(e) => setCustomIncomeCategory(e.target.value)}
                     placeholder="e.g. Bonus, Commission"
-                    className="w-full mt-2 bg-secondary/60 border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40"
+                    className="w-full bg-muted/40 border border-muted/50 rounded-xl px-4 py-3.5 text-base font-medium text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-background transition-all"
                   />
                 </div>
               )}
 
-              <div className="mb-4">
-                <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Date</label>
+              <div className="mb-5">
+                <label className="text-[10px] text-muted-foreground font-label uppercase tracking-widest px-1 block mb-1">Date</label>
                 <input
                   type="date"
                   value={date}
                   max={new Date().toISOString().split("T")[0]}
                   min="2000-01-01"
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full mt-2 bg-secondary/60 border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40"
+                  className="w-full bg-muted/40 border border-muted/50 rounded-xl px-4 py-3.5 text-base font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-background transition-all"
                 />
               </div>
 
-              <div className="mb-6">
-                <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-2 block">Category</label>
+              <div className="mb-8">
+                <label className="text-[10px] text-muted-foreground font-label uppercase tracking-widest px-1 block mb-2">Category</label>
                 <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
                   {availableCategories.map((cat) => (
                     <button
                       key={cat.id}
                       onClick={() => setCategory(cat.id === "custom" ? "custom" : cat.name)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${
                         category === (cat.id === "custom" ? "custom" : cat.name)
-                          ? "ring-2 ring-primary bg-primary/20 text-foreground"
-                          : "bg-secondary text-muted-foreground hover:text-foreground"
+                          ? "border-primary/50 bg-primary/10 text-primary"
+                          : "border-muted-foreground/20 bg-muted/30 text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                       }`}
                     >
                       <span>{cat.icon}</span>
@@ -190,9 +190,9 @@ export default function AddExpenseModal() {
                   (type === "income" && category === "custom" && !customIncomeCategory.trim()) ||
                   addTransaction.isPending
                 }
-                className="w-full py-3.5 rounded-lg gradient-primary text-white font-medium text-sm shadow-lg shadow-[hsl(217_91%_60%/0.2)] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                className="w-full py-4 rounded-xl editorial-gradient text-white font-bold text-base shadow-sm disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:shadow-md active:scale-[0.98]"
               >
-                {addTransaction.isPending ? "Adding..." : `Add ${type === "income" ? "Income" : "Expense"}`}
+                {addTransaction.isPending ? "Loging..." : `Log ${type === "income" ? "Income" : "Expense"}`}
               </button>
             </div>
           </motion.div>

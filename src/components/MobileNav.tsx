@@ -63,7 +63,7 @@ export default function MobileNav() {
         )}
       </AnimatePresence>
 
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border safe-area-bottom pb-2">
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-background/90 backdrop-blur-3xl border-t-0 shadow-[0_-10px_40px_rgba(19,27,46,0.06)] safe-area-bottom pb-2">
         <AnimatePresence>
           {isQuickAddOpen && (
             <motion.div
@@ -72,7 +72,7 @@ export default function MobileNav() {
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden"
             >
-              <div className="p-4 bg-card/50 border-b border-border/50 flex flex-col gap-3">
+              <div className="p-4 bg-muted/90 rounded-t-3xl shadow-lg flex flex-col gap-3">
                 <div className="flex gap-2 p-1 bg-secondary/80 rounded-lg">
                   <button
                     onClick={() => setType("expense")}
@@ -116,7 +116,7 @@ export default function MobileNav() {
                   <button
                     onClick={handleSubmit}
                     disabled={!amount || addTransaction.isPending}
-                    className="w-9 h-9 flex items-center justify-center rounded-lg gradient-primary text-white shadow-md disabled:opacity-50"
+                    className="w-9 h-9 flex items-center justify-center rounded-lg editorial-gradient text-white shadow-md disabled:opacity-50"
                   >
                     <Check className="w-4 h-4" />
                   </button>
@@ -134,8 +134,8 @@ export default function MobileNav() {
                   key="add"
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsQuickAddOpen(!isQuickAddOpen)}
-                  className={`w-12 h-12 -mt-6 rounded-xl flex items-center justify-center shadow-lg transition-transform ${
-                    isQuickAddOpen ? "bg-secondary text-foreground" : "gradient-primary text-white shadow-[hsl(217_91%_60%/0.3)]"
+                  className={`w-14 h-14 -mt-8 rounded-full flex items-center justify-center shadow-xl transition-all ${
+                    isQuickAddOpen ? "bg-card text-foreground border border-muted" : "editorial-gradient text-white"
                   }`}
                 >
                   <motion.div animate={{ rotate: isQuickAddOpen ? 45 : 0 }}>

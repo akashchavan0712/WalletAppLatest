@@ -1,46 +1,41 @@
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
-import { formatCurrency } from "@/lib/data";
-import { useTransactions } from "@/hooks/useTransactions";
-import { startOfWeek, addDays, format } from "date-fns";
+import { motion } from "framer-motion";
+
+const velocityData = [
+  { name: "Essentials", percent: 65, change: -4, color: "bg-foreground" },
+  { name: "Discretionary", percent: 42, change: 18, color: "bg-foreground" },
+  { name: "Investment", percent: 88, change: 2, color: "bg-foreground" },
+];
 
 export default function WeeklyChart() {
-  const { data: transactions = [] } = useTransactions();
-
-  const now = new Date();
-  const weekStart = startOfWeek(now, { weekStartsOn: 1 });
-  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-  const data = days.map((day, i) => {
-    const dayDate = addDays(weekStart, i);
-    const dayStr = format(dayDate, "yyyy-MM-dd");
-    const amount = transactions
-      .filter((t) => t.type === "expense" && t.date === dayStr)
-      .reduce((s, t) => s + t.amount, 0);
-    return { day, amount };
-  });
-
   return (
-    <div className="glass-card p-5">
-      <h3 className="font-display font-semibold text-sm text-foreground mb-4">This Week</h3>
-      <div className="h-48">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} barCategoryGap="30%">
-            <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-            <YAxis hide />
-            <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
-              contentStyle={{
-                background: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: "8px",
-                color: "hsl(var(--foreground))",
-                fontSize: "12px",
-              }}
-              cursor={{ fill: "hsl(var(--secondary) / 0.5)" }}
-            />
-            <Bar dataKey="amount" radius={[4, 4, 0, 0]} fill="hsl(217 91% 60%)" />
-          </BarChart>
-        </ResponsiveContainer>
+    <div className="bg-background border border-muted/40 p-8 rounded-[2.5rem] shadow-sm flex flex-col h-fit">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h3 className="font-headline font-extrabold text-xl tracking-tight text-foreground">Weekly Velocity</h3>
+          <p className="text-xs font-label text-muted-foreground mt-1">Efficiency vs Previous Week</p>
+        </div>
+      </div>
+
+      <div className="space-y-8">
+        {velocityData.map((item, i) => (
+          <div key={item.name} className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold text-foreground">{item.name}</span>
+              <span className={`text-xs font-label font-bold ${item.change > 0 ? "text-destructive" : "text-[hsl(161_100%_21%)]"}`}>
+                {item.change > 0 ? "+" : ""}{item.change}%
+              </span>
+            </div>
+            <div className="w-full h-5 bg-muted/20 rounded-full overflow-hidden flex gap-1">
+               <motion.div 
+                 initial={{ width: 0 }}
+                 animate={{ width: `${item.percent}%` }}
+                 transition={{ duration: 1, delay: i * 0.1 }}
+                 className={`h-full ${item.color} rounded-full shadow-sm`}
+               />
+               <div className="flex-1 bg-muted/40 rounded-full" />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

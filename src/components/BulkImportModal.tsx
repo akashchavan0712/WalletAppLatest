@@ -233,9 +233,9 @@ export default function BulkImportModal() {
             transition={{ type: "spring", bounce: 0.2 }}
             className="fixed z-50 inset-0 flex items-center justify-center p-4"
           >
-            <div className="w-full max-w-[680px] glass-card p-0 max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="w-full max-w-[680px] bg-background border border-muted/50 rounded-[2rem] shadow-2xl p-0 max-h-[90vh] flex flex-col overflow-hidden">
               {/* Header */}
-              <div className="flex items-center justify-between p-5 border-b border-border shrink-0">
+              <div className="flex items-center justify-between p-6 border-b border-muted/30 bg-muted/10 shrink-0">
                 <div className="flex items-center gap-3">
                   {step === "review" && (
                     <button
@@ -250,7 +250,7 @@ export default function BulkImportModal() {
                     </button>
                   )}
                   <div>
-                    <h2 className="font-display font-bold text-lg text-foreground">
+                    <h2 className="font-headline font-extrabold text-xl tracking-tight text-foreground">
                       {step === "upload" && "Import Statement"}
                       {step === "review" && "Review Transactions"}
                       {step === "importing" && "Importing..."}
@@ -313,12 +313,12 @@ export default function BulkImportModal() {
                         onDrop={handleDrop}
                         onClick={() => fileInputRef.current?.click()}
                         className={`
-                          relative border-2 border-dashed rounded-xl p-10 text-center cursor-pointer
+                          relative border-2 border-dashed rounded-[2rem] p-12 text-center cursor-pointer
                           transition-all duration-300 group
                           ${
                             isDragging
                               ? "border-primary bg-primary/5 scale-[1.02]"
-                              : "border-border hover:border-primary/50 hover:bg-secondary/20"
+                              : "border-muted/60 hover:border-primary/40 hover:bg-muted/30"
                           }
                           ${isParsing ? "pointer-events-none opacity-60" : ""}
                         `}
@@ -414,9 +414,9 @@ export default function BulkImportModal() {
                       className="flex flex-col"
                     >
                       {/* Summary bar */}
-                      <div className="px-5 py-3 bg-secondary/20 border-b border-border flex items-center justify-between flex-wrap gap-2">
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
-                          <span className="font-medium text-foreground">
+                      <div className="px-6 py-4 bg-muted/40 border-b border-muted/50 flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-4 text-xs font-label text-muted-foreground flex-wrap">
+                          <span className="font-bold text-foreground">
                             {selectedCount} selected
                           </span>
                           <span>
@@ -499,7 +499,7 @@ export default function BulkImportModal() {
                               className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
                                 tx.selected
                                   ? "bg-primary border-primary"
-                                  : "border-border hover:border-primary/50"
+                                  : "border-muted/50 hover:border-primary/50"
                               }`}
                             >
                               {tx.selected && (
@@ -664,7 +664,7 @@ export default function BulkImportModal() {
                       </div>
                       <button
                         onClick={handleClose}
-                        className="mt-2 px-6 py-2.5 rounded-lg gradient-primary text-white font-medium text-sm shadow-lg shadow-[hsl(217_91%_60%/0.2)] hover:shadow-[hsl(217_91%_60%/0.3)] transition-shadow"
+                        className="mt-2 px-6 py-2.5 rounded-xl editorial-gradient text-white font-bold text-sm shadow-sm hover:shadow-md transition-shadow active:scale-95"
                       >
                         View Transactions
                       </button>
@@ -692,7 +692,7 @@ export default function BulkImportModal() {
                   <button
                     onClick={handleImport}
                     disabled={selectedCount === 0 || bulkAdd.isPending}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg gradient-primary text-white text-sm font-medium shadow-lg shadow-[hsl(217_91%_60%/0.2)] disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:shadow-[hsl(217_91%_60%/0.3)]"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl editorial-gradient text-white text-sm font-bold shadow-sm disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:shadow-md active:scale-95"
                   >
                     {bulkAdd.isPending ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
