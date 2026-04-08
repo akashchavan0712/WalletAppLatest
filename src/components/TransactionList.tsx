@@ -9,9 +9,11 @@ import { toast } from "sonner";
 interface Props {
   limit?: number;
   showHeader?: boolean;
+  categoryFilter?: string;
+  searchQuery?: string;
 }
 
-export default function TransactionList({ limit, showHeader = true }: Props) {
+export default function TransactionList({ limit, showHeader = true, categoryFilter, searchQuery }: Props) {
   const { data: transactions = [], isLoading } = useTransactions();
   const { data: categories = [] } = useCategories();
   const deleteTransaction = useDeleteTransaction();
@@ -20,7 +22,15 @@ export default function TransactionList({ limit, showHeader = true }: Props) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isSelectionMode, setIsSelectionMode] = useState(false);
 
-  const list = limit ? transactions.slice(0, limit) : transactions;
+  const filtered = transactions.filter(tx => {
+    const matchesCategory = !categoryFilter || tx.category === categoryFilter;
+    const matchesSearch = !searchQuery || 
+      tx.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tx.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const list = limit ? filtered.slice(0, limit) : filtered;
   const getCat = (name: string) => categories.find((c) => c.name === name);
 
   const handleToggleSelect = (id: string, e: React.MouseEvent) => {

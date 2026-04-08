@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useTransactions, useCategories } from "@/hooks/useTransactions";
 import { useMemo } from "react";
 
-export default function WeeklyChart() {
+export default function MobileWeeklyVelocity() {
   const { data: transactions = [] } = useTransactions();
   const { data: categories = [] } = useCategories();
 
@@ -27,7 +27,6 @@ export default function WeeklyChart() {
         change = 100;
       }
 
-      // Percentage of total current week spending for progress bar
       const totalCurrent = currentWeekTx.reduce((s, t) => s + t.amount, 0);
       const percent = totalCurrent > 0 ? Math.round((current / totalCurrent) * 100) : 0;
 
@@ -42,7 +41,7 @@ export default function WeeklyChart() {
 
       return {
         name: cat,
-        percent: percent || (Math.random() * 20 + 20), // Fallback for visual if no data
+        percent: percent || (Math.random() * 20 + 20), // visual fallback
         change,
         color: catData?.color || fallbackColors[cat] || "#fff"
       };
@@ -50,24 +49,22 @@ export default function WeeklyChart() {
   }, [transactions, categories]);
 
   return (
-    <div className="bg-background border border-muted/40 p-8 rounded-[2.5rem] shadow-sm flex flex-col h-fit">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h3 className="font-headline font-extrabold text-xl tracking-tight text-foreground">Weekly Velocity</h3>
-          <p className="text-xs font-label text-muted-foreground mt-1">Efficiency vs Previous Week</p>
-        </div>
+    <div className="mobile-velocity-card">
+      <div className="mb-4">
+        <h3 className="text-lg font-black tracking-tight text-foreground">Weekly Velocity</h3>
+        <p className="text-[10px] font-label font-bold text-muted-foreground uppercase opacity-70 mt-0.5">Efficiency vs Prev Week</p>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-4">
         {velocityData.map((item, i) => (
-          <div key={item.name} className="space-y-3">
+          <div key={item.name} className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-foreground">{item.name}</span>
-              <span className={`text-xs font-label font-bold ${item.change > 0 ? "text-destructive" : "text-[hsl(161_100%_21%)]"}`}>
+              <span className="text-xs font-bold text-foreground">{item.name}</span>
+              <span className={`text-[10px] font-label font-black ${item.change > 0 ? "text-destructive" : "text-emerald-500"}`}>
                 {item.change > 0 ? "+" : ""}{item.change}%
               </span>
             </div>
-            <div className="w-full h-5 bg-muted/20 rounded-full overflow-hidden flex gap-1">
+            <div className="w-full h-2.5 bg-muted/20 rounded-full overflow-hidden flex gap-0.5">
                <motion.div 
                  initial={{ width: 0 }}
                  animate={{ width: `${item.percent}%` }}
@@ -75,7 +72,7 @@ export default function WeeklyChart() {
                  className="h-full rounded-full shadow-sm"
                  style={{ backgroundColor: item.color }}
                />
-               <div className="flex-1 bg-muted/40 rounded-full" />
+               <div className="flex-1 bg-secondary/40 rounded-full" />
             </div>
           </div>
         ))}

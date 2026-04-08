@@ -98,6 +98,9 @@
     --on-surface-variant: #94a3b8;
     --outline-variant: #1e293b;
   }
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
 }
 
 @layer base {
@@ -251,3 +254,288 @@
   33% { transform: translate(10px, -15px) scale(1.02); }
   66% { transform: translate(-8px, 8px) scale(0.98); }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE DASHBOARD — Premium finance app mobile experience
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Stat Cards (Income / Expense) */
+.mobile-stat-card {
+  padding: 1.25rem;
+  border-radius: 1.5rem;
+  border: 1px solid hsl(var(--muted) / 0.25);
+  background: hsl(var(--card));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: all 0.2s ease;
+}
+
+.mobile-stat-icon-wrap {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.mobile-stat-icon-wrap.income-icon {
+  background: hsl(161 100% 21% / 0.15);
+  color: hsl(161 100% 40%);
+}
+
+.mobile-stat-icon-wrap.expense-icon {
+  background: hsl(0 72% 51% / 0.15);
+  color: hsl(0 72% 55%);
+}
+
+.light .mobile-stat-icon-wrap.income-icon {
+  background: hsl(161 100% 21% / 0.1);
+  color: hsl(161 100% 25%);
+}
+
+.light .mobile-stat-icon-wrap.expense-icon {
+  background: hsl(0 72% 51% / 0.1);
+  color: hsl(0 72% 45%);
+}
+
+/* Default (dark mode) */
+.mobile-cashflow-card {
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #eef0f4;
+  color: #111;
+}
+
+.mobile-cashflow-card p {
+  color: #111 !important;
+}
+
+.mobile-cashflow-card > div > p:first-child {
+  color: #666 !important;
+}
+
+/* Light mode override */
+.light .mobile-cashflow-card {
+  background: #1a1a2e;
+  color: #fff;
+}
+
+.light .mobile-cashflow-card p {
+  color: #fff !important;
+}
+
+.light .mobile-cashflow-card > div > p:first-child {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.mobile-cashflow-btn {
+  padding: 0.625rem 1.5rem;
+  border-radius: 1.25rem;
+  font-weight: 800;
+  font-size: 0.8rem;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  background: #222;
+  color: #fff;
+}
+
+.light .mobile-cashflow-btn {
+  background: #fff;
+  color: #1a1a2e;
+}
+
+/* Chart Container on mobile */
+.mobile-chart-container {
+  border-radius: 2rem;
+  overflow: hidden;
+}
+
+.mobile-velocity-card,
+.mobile-commitments-card {
+  padding: 1.25rem;
+  border-radius: 1.75rem;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--muted)/0.2);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* Budget Ring Horizontal Scroll */
+.mobile-budget-scroll {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-budget-ring-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  min-width: 100px;
+  scroll-snap-align: center;
+  flex-shrink: 0;
+}
+
+.mobile-budget-empty {
+  padding: 2rem;
+  text-align: center;
+  width: 100%;
+  background: hsl(var(--card));
+  border-radius: 1.5rem;
+  border: 1px solid hsl(var(--muted) / 0.2);
+}
+
+/* Savings Goal Items */
+.mobile-savings-item {
+  padding: 1rem 1.25rem;
+  border-radius: 1.25rem;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--muted) / 0.2);
+}
+
+.mobile-savings-empty {
+  padding: 2rem;
+  background: hsl(var(--card));
+  border-radius: 1.5rem;
+  border: 1px solid hsl(var(--muted) / 0.2);
+}
+
+/* Floating Action Button */
+.mobile-fab {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 1.25rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 30px rgba(37, 99, 235, 0.4);
+  z-index: 45;
+  border: none;
+  cursor: pointer;
+}
+
+/* Only show FAB on mobile */
+@media (min-width: 1024px) {
+  .mobile-fab {
+    display: none;
+  }
+}
+
+/* Mobile Dashboard Responsive Overrides */
+@media (max-width: 1023px) {
+  /* Override the spending chart container for mobile */
+  .mobile-chart-container > div > div:first-child > div:last-child {
+    gap: 0.5rem;
+  }
+
+  /* Tighter main padding on mobile */
+  main.flex-1 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-top: 0.5rem !important;
+  }
+}
+
+/* Light mode specific adjustments */
+.light .mobile-stat-card {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.light .mobile-savings-item {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+
+.light .mobile-budget-empty,
+.light .mobile-savings-empty {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+
+.light .mobile-fab {
+  box-shadow: 0 8px 30px rgba(37, 99, 235, 0.3);
+}
+
+/* ─── Mobile Nav Bar ─── */
+.mobile-nav-bar {
+  background: hsl(var(--background) / 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid hsl(var(--muted) / 0.2);
+}
+
+.dark .mobile-nav-bar {
+  background: rgba(2, 6, 23, 0.95);
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.light .mobile-nav-bar {
+  background: rgba(255, 255, 255, 0.95);
+  border-top-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-nav-active-bar {
+  background: hsl(var(--primary));
+}
+
+.dark .mobile-nav-active-bar {
+  background: #3b82f6;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+.light .mobile-nav-active-bar {
+  background: #2563eb;
+}
+
+.mobile-nav-icon-active {
+  color: hsl(var(--primary));
+}
+
+.dark .mobile-nav-icon-active {
+  color: #3b82f6;
+}
+
+.light .mobile-nav-icon-active {
+  color: #2563eb;
+}
+
+.mobile-nav-icon-inactive {
+  color: hsl(var(--muted-foreground) / 0.4);
+}
+
+.mobile-nav-label-active {
+  color: hsl(var(--primary));
+  font-weight: 700;
+}
+
+.dark .mobile-nav-label-active {
+  color: #3b82f6;
+}
+
+.light .mobile-nav-label-active {
+  color: #2563eb;
+}
+
+.mobile-nav-label-inactive {
+  color: hsl(var(--muted-foreground) / 0.4);
+  font-weight: 500;
+}
+
+

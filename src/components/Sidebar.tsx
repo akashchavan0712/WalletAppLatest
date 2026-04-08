@@ -15,7 +15,7 @@ const navItems = [
 ];
 
 export default function Sidebar() {
-  const { activeTab, setActiveTab } = useAppStore();
+  const { activeTab, setActiveTab, setShowAddModal } = useAppStore();
   const profile = useProfile();
   const auth = useAuth();
   
@@ -72,7 +72,7 @@ export default function Sidebar() {
       {/* Quick Add Top up replacement styling */}
       <div className="px-2">
         <button
-          onClick={() => setActiveTab("add")}
+          onClick={() => setShowAddModal(true)}
           className="w-full py-2.5 bg-foreground text-background rounded-xl font-bold text-sm active:scale-95 transition-transform hover:opacity-90"
         >
           Quick Add

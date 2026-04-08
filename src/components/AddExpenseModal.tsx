@@ -40,9 +40,16 @@ export default function AddExpenseModal() {
   const handleSubmit = () => {
     const categoryName = category === "custom" ? customIncomeCategory.trim() : category;
     if (!amount || !categoryName || !date || (type === "expense" && !description)) return;
+    
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      toast.error("Please enter a valid amount greater than zero");
+      return;
+    }
+
     addTransaction.mutate(
       {
-        amount: parseFloat(amount),
+        amount: parsedAmount,
         type,
         category: categoryName,
         description,
@@ -184,6 +191,7 @@ export default function AddExpenseModal() {
                 onClick={handleSubmit}
                 disabled={
                   !amount ||
+                  parseFloat(amount) <= 0 ||
                   !category ||
                   !date ||
                   (type === "expense" && !description) ||
